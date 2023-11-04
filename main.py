@@ -52,12 +52,13 @@ monsters = [
     {"name": "Дракон", "hp": 150, "power_attack": 30},
 ]
 
-while hp > 0:
+game_loop = True
+while game_loop:
     monster = random.choice(monsters)
     print(f"\nВы встретили монстра: {monster['name']}")
     print("Бой начинается!")
 
-    while monster["hp"] > 0:
+    while True:
         print("\nВаш ход:")
         print("1 - Атаковать")
         print("2 - Поставить блок")
@@ -65,12 +66,12 @@ while hp > 0:
             print("3 - Использовать способность (одноразово)")
 
         choice = input("Выберите действие: ")
-
+        armor_use = False
         if choice == "1":
-            monster["hp"] -= power_attack
+            monster["hp"] = monster["hp"] - power_attack
             print(f"Вы атакуете монстра и наносите {power_attack} урона. У монстра осталось {monster['hp']} здоровья.")
         elif choice == "2":
-            armor = 10  # Увеличиваем броню, когда ставится блок
+            armor_use = True
             print("Вы ставите блок и снижаете получаемый урон.")
         elif choice == "3" and not ability_used:
             power_attack *= 2  # Удвоение силы атаки при использовании способности
@@ -81,6 +82,27 @@ while hp > 0:
 
         if monster["hp"] <= 0:
             print(f"Вы победили {monster['name']}!")
+            print("Ваши характеристики увеличены + 3")
+            hp += 3
+            power_attack += 3
+            armor += 3
+            ability_used = False
             break
 
         # Ход монстра
+        print(f"Ход: {monster['name']}")
+
+        if armor_use:
+            damage = max(0, monster['power_attack'] + armor)
+            hp = hp - damage
+        else:
+            damage = monster['power_attack']
+            hp = hp - damage
+        print(f"Монстр атакует и наносит {damage } урона."
+              f" У {name_hero} осталось {hp} здоровья.")
+
+        if hp <= 0:
+            print(f"Вы проиграли! Игра окончена!")
+            game_loop = False
+            break
+
